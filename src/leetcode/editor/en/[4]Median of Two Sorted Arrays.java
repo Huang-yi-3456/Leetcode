@@ -29,36 +29,32 @@
 class Solution {
     public double findMedianSortedArrays(int[] nums1, int[] nums2) {
         int total = nums1.length + nums2.length;
-        int k = (total + 1) / 2;
-        int start = 0;
-        int end = nums1.length;
-        while (start < end) {
-            int m1 = start + (end - start) / 2;
-            int m2 = k - m1;
-            System.out.println(start);
-            System.out.println(m1);
-            System.out.println(m2);
-            if (nums1[m1] < nums2[m2-1]) {
-                start = m1 + 1;
-            } else {
-                end = m1;
-            }
+        if (total % 2 == 0) {
+            int left = findKth(nums1, 0, nums2, 0, (total+1)/2);
+            int right = findKth(nums1, 0, nums2, 0, (total+2)/2);
+            return (left+right) / 2.0;
+        } else {
+            return findKth(nums1, 0, nums2, 0, (total+1)/2);
         }
-        int split = start;
-        int leftM = Math.max(
-                split >= nums1.length ? Integer.MIN_VALUE : nums1[split-1],
-                k-split-1 < 0 ? Integer.MIN_VALUE :nums2[k-split-1]);
-
-        if (k % 2 == 1) {
-            return leftM;
-        }
-        int rightM = Math.min(
-                split+1 >= nums1.length ? Integer.MAX_VALUE : nums1[split],
-                k-split < 0 ? Integer.MAX_VALUE :nums2[k-split]);
-
-        return (leftM + rightM) / 2.0;
     }
 
-    //int findKt
+    int findKth(int[] nums1, int start1, int[] nums2, int start2, int k) {
+        if (start1 >= nums1.length) {
+            return nums2[start2 + k - 1];
+        }
+        if (start2 >= nums2.length) {
+            return nums1[start1 + k - 1];
+        }
+        if (k == 1) {
+            return Math.min(nums1[start1], nums2[start2]);
+        }
+        int mid1 = start1 + k/2 -1 >= nums1.length ? Integer.MAX_VALUE : nums1[start1 + k/2 -1];
+        int mid2 = start2 + k/2 -1 >= nums2.length ? Integer.MAX_VALUE : nums2[start2 + k/2 -1];
+        if (mid1 < mid2) {
+            return findKth(nums1, start1 + k/2, nums2, start2, k - k/2);
+        } else {
+            return findKth(nums1, start1, nums2, start2 + k/2, k - k/2);
+        }
+    }
 }
 //leetcode submit region end(Prohibit modification and deletion)
