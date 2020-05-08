@@ -52,14 +52,14 @@
 //leetcode submit region begin(Prohibit modification and deletion)
 class Solution {
     public int maxProfit(int[] prices) {
-        int[][] dp = new int[2][prices.length+1];
-        dp[0][0] = 0;
-        dp[1][0] = Integer.MIN_VALUE;
+        int dp_0 = 0;
+        int dp_1 = Integer.MIN_VALUE;
         for (int day = 1; day <= prices.length; ++day) {
-            dp[0][day] = Math.max(dp[0][day-1], dp[1][day-1] + prices[day-1]);
-            dp[1][day] = Math.max(dp[0][day-1] - prices[day-1], dp[1][day-1]);
+            int tmp = dp_0;
+            dp_0 = Math.max(dp_0, dp_1 + prices[day-1]);
+            dp_1 = Math.max(tmp - prices[day-1], dp_1);
         }
-        return dp[0][prices.length];
+        return dp_0;
     }
 }
 //leetcode submit region end(Prohibit modification and deletion)
