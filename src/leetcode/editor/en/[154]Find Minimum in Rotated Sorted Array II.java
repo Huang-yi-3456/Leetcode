@@ -31,21 +31,19 @@
 //leetcode submit region begin(Prohibit modification and deletion)
 class Solution {
     public int findMin(int[] nums) {
-        if (nums.length == 0) return -1;
-        if (nums.length == 1) return nums[0];
-        int start = 0;
-        int end = nums.length - 1;
-        while(start < end) {
-            int mid = start + (end - start) / 2;
-            if (nums[mid] < nums[end]) {
-                end = mid;
-            } else if (nums[end] < nums[mid]) {
-                start = mid + 1;
-            } else {
-                end--;
-            }
+        return findMin(nums, 0, nums.length - 1);
+    }
+
+    public int findMin(int[] nums, int start, int end) {
+        if (nums[end] > nums[start]) {
+            return nums[start];
         }
-        return nums[start];
+        if (start + 1 >= end) {
+            return Math.min(nums[start], nums[end]);
+        }
+        int mid = start + (end - start) / 2;
+
+        return Math.min(findMin(nums, start, mid), findMin(nums, mid+1, end));
     }
 
 }
