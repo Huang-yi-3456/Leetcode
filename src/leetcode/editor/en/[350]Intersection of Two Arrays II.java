@@ -39,28 +39,22 @@
 //leetcode submit region begin(Prohibit modification and deletion)
 class Solution {
     public int[] intersect(int[] nums1, int[] nums2) {
+        if (nums1.length > nums2.length) {
+            return intersect(nums2, nums1);
+        }
         Map<Integer, Integer> m1 = new HashMap<>();
-        Map<Integer, Integer> m2 = new HashMap<>();
         for (int num : nums1) {
             m1.put(num, m1.getOrDefault(num, 0) + 1);
         }
+        int k = 0;
         for (int num : nums2) {
-            m2.put(num, m2.getOrDefault(num, 0) + 1);
-        }
-        List<Integer> list = new ArrayList<>();
-        for (Map.Entry<Integer, Integer> entry : m2.entrySet()) {
-            int key = entry.getKey();
-            if (m1.containsKey(key)) {
-                int upper = Math.min(m1.get(key), entry.getValue());
-                for (int i = 0;  i < upper; ++i)
-                    list.add(key);
+            int count = m1.getOrDefault(num, 0);
+            if (count > 0) {
+                nums1[k++] = num;
+                m1.put(num, m1.get(num) - 1);
             }
         }
-        int[] ans = new int[list.size()];
-        for (int i = 0; i < list.size(); ++i) {
-            ans[i] = list.get(i);
-        }
-        return ans;
+        return Arrays.copyOfRange(nums1, 0, k);
     }
 }
 //leetcode submit region end(Prohibit modification and deletion)
