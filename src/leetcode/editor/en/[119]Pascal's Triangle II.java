@@ -22,22 +22,22 @@
 
 //leetcode submit region begin(Prohibit modification and deletion)
 class Solution {
-    public List<Integer> getRow(int rowIndex) {
-        Integer[] ans = new Integer[rowIndex+1];
-        for (int i = 0; i < rowIndex +1; ++i) {
-            int size = i + 1;
-            int tmp = 1;
-            for (int index = 0; index < size; ++index) {
-                if (index == 0 || index == i) {
-                    ans[index] = 1;
-                } else {
-                    int pre  = ans[index];
-                    ans[index] = tmp + ans[index];
-                    tmp = pre;
-                }
+
+        public List<Integer> getRow(int rowIndex) {
+            if (rowIndex == 0) {
+                List<Integer> ans = new ArrayList<>();
+                ans.add(1);
+                return ans;
             }
+            List<Integer> lower = getRow(rowIndex - 1);
+            int tmp = 1;
+            for (int i = 1; i < rowIndex ; ++i) {
+                int value = tmp + lower.get(i);
+                tmp = lower.get(i);
+                lower.set(i, value);
+            }
+            lower.add(1);
+            return lower;
         }
-        return Arrays.asList(ans);
-    }
 }
 //leetcode submit region end(Prohibit modification and deletion)
