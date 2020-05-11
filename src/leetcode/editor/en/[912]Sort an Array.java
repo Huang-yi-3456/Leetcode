@@ -22,30 +22,30 @@
 class Solution {
     public int[] sortArray(int[] nums) {
         if (nums.length < 2) return nums;
-        int pivot =  nums.length / 2;
-        int[] left = sortArray(Arrays.copyOfRange(nums, 0, pivot));
-        int[] right = sortArray(Arrays.copyOfRange(nums, pivot, nums.length));
-        return merge(left, right);
+        return quickSort(nums, 0, nums.length-1);
     }
 
-
-    public int[] merge(int[] left, int [] right) {
-        int[] ret = new int[left.length + right.length];
-        int i = 0, j = 0, k = 0;
-        while (i < left.length && j < right.length) {
-            if (left[i] < right[j]) {
-                ret[k++] = left[i++];
-            } else {
-                ret[k++] = right[j++];
+    public int[] quickSort(int[] nums, int start, int end) {
+        if (end - start < 1) {
+            return nums;
+        }
+        int pivot = nums[end];
+        int mark = start;
+        for (int i = start; i <= end; ++i) {
+            if (nums[i] < pivot) {
+                swap(nums, i, mark++);
             }
         }
-        while (i < left.length) {
-            ret[k++] = left[i++];
-        }
-        while (j < right.length) {
-            ret[k++] = right[j++];
-        }
-        return ret;
+        swap(nums, mark, end);
+        quickSort(nums, start, mark-1);
+        quickSort(nums, mark+1, end);
+        return nums;
+    }
+
+    public void swap(int[] nums, int first, int second) {
+        int tmp = nums[first];
+        nums[first] = nums[second];
+        nums[second] = tmp;
     }
 }
 //leetcode submit region end(Prohibit modification and deletion)
