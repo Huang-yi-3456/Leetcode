@@ -30,18 +30,26 @@
 class Solution {
     public boolean searchMatrix(int[][] matrix, int target) {
         if (matrix.length == 0 || matrix[0].length == 0) return false;
-        int row = 0;
-        int col = matrix[0].length - 1;
-        while (row < matrix.length && col >= 0) {
-            int cur = matrix[row][col];
-            if (target == cur) return true;
-            if (target > cur) {
-                row++;
-            } else {
-                col--;
+        return searchMatrix(matrix, target, 0, 0, matrix[0].length-1, matrix.length-1);
+    }
+
+    boolean searchMatrix(int[][] matrix, int target, int left, int up, int right, int down) {
+        if (left > right || up > down) return false;
+        if (target < matrix[up][left] || target > matrix[down][right]) return false;
+
+        int mid = left + (right - left) / 2;
+        int row = up;
+
+        for (;row <= down; ++row) {
+            if (matrix[row][mid] == target) {
+                return true;
+            }
+            if (matrix[row][mid] > target) {
+                break;
             }
         }
-        return false;
+        return searchMatrix(matrix, target, left, row, mid-1, down) ||
+                searchMatrix(matrix, target, mid+1, up, right, row-1);
     }
 }
 //leetcode submit region end(Prohibit modification and deletion)
