@@ -53,11 +53,12 @@
 //leetcode submit region begin(Prohibit modification and deletion)
 public class Codec {
 
+    // Encodes a list of strings to a single string.
     private String lenToStr(String s) {
         int len = s.length();
         int mask = 0xff;
         char[] bytes = new char[4];
-        for (int i = 3; i >= 0; i--) {
+        for (int i = 0; i < 4; i++) {
             bytes[3 - i] = (char) (len >> (i * 8) & mask);
         }
         return new String(bytes);
@@ -73,27 +74,27 @@ public class Codec {
         return sb.toString();
     }
 
-    private int strToLen(String header) {
-        int len = 0;
-        int result = 0;
-        for (char c : header.toCharArray()) {
-            result = (result << 8) + (int) c;
-        }
-        return result;
-    }
     // Decodes a single string to a list of strings.
     public List<String> decode(String s) {
+        if (s == null) return null;
+        // System.out.println(s);
+        int size = s.length();
         List<String> ret = new LinkedList<>();
         int start = 0;
-        int end = s.length();
-        while (start < end) {
-            String header = s.substring(start, start+4);
-            int len = strToLen(header);
-            ret.add(s.substring(start+4, start + 4 + len));
-            start += 4 + len;
+        while (start < size) {
+            int len = strToLen(s.substring(start, start + 4));
+            ret.add(s.substring(start+4, start+4+len));
+            start += 4+len;
         }
-
         return ret;
+    }
+
+    int strToLen(String header) {
+        int result = 0;
+        for (int i = 0; i < 4; ++i) {
+            result = (result << 8) + (int) header.charAt(i);
+        }
+        return result;
     }
 }
 
