@@ -27,6 +27,14 @@
  */
 public class Codec {
 
+    String intToStr(int val) {
+        int mask = 0xff;
+        char[] bytes = new char[4];
+        for (int i = 0; i < 4; ++i) {
+            bytes[i] = (char) (val >> (i * 8) & mask);
+        }
+        return new String(bytes);
+    }
     // Encodes a tree to a single string.
     public String serialize(TreeNode root) {
         if (root == null) return null;
@@ -42,54 +50,45 @@ public class Codec {
         sb.append(intToStr(root.val));
         serialize(root.left, sb);
         serialize(root.right, sb);
-
     }
 
-    String intToStr(int n) {
-        int mask = 0xff;
-        char[] bytes = new char[4];
-        for (int i = 3; i >= 0; i--) {
-            bytes[3 - i] = (char) (n >> 8 * i & mask);
-        }
-        return new String(bytes);
-    }
-
-    // Decodes your encoded data to tree.
-    public TreeNode deserialize(String data) {
-        // System.out.print(data);
-        if(data == null) return null;
-        LinkedList<Integer> nodes = new LinkedList<>();
-        int size = data.length();
-        for (int i = 0; i < size; ) {
-            String str = data.substring(i, i+4);
-            nodes.add(stringToInt(str));
-            //System.out.println(data.substring(i, i+4));
-            i += 4;
-        }
-        return deserialize(nodes, Integer.MIN_VALUE, Integer.MAX_VALUE);
-    }
-
-    public int stringToInt(String bytesStr) {
+    int strToInt(String bytes) {
         int result = 0;
-        for(char b : bytesStr.toCharArray()) {
-            result = (result << 8) + (int)b;
+        for (int i = 3; i >= 0; i--) {
+            result = (result << 8) + (int) bytes.charAt(i);
         }
         return result;
     }
 
-    TreeNode deserialize(LinkedList<Integer> nodes, int min, int max) {
-        if (nodes.size() == 0) {
-            return null;
+    // Decodes your encoded data to tree.
+    public TreeNode deserialize(String data) {
+        if (data == null) return null;
+        List<Integer> nodes = new LinkedList<>();
+        int start = 0;
+        int size = data.length();
+
+        while (start < size) {
+            int val = strToInt(data.substring(start, start+4));
+            nodes.add(val);
+            start += 4;
         }
-        int val = nodes.get(0);
-        if (val >= max || val <= min) return null;
-        TreeNode root = new TreeNode(val);
-        nodes.remove(0);
-        root.left = deserialize(nodes, min, val);
-        root.right = deserialize(nodes, val, max);
-        return root;
+        return deserialize(nodes, Integer.MIN_VALUE, Integer.MAX_VALUE);
     }
 
+    TreeNode deserialize(List<Integer> nodes, int min, int max) {
+        if (nodes.isEmpty()) {
+            return null;
+        }
+        TreeNode root = new TreeNode(nodes.get(0));
+        if (root.val >= max || root.val <= min) {
+            return null;
+        }
+        nodes.remove(0);
+        root.left = deserialize(nodes, min, root.val);
+        root.right = deserialize(nodes, root.val, max);
+
+        return root;
+    }
 }
 
 // Your Codec object will be instantiated and called as such:
