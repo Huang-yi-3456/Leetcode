@@ -61,21 +61,38 @@
 class Solution {
     public TreeNode deleteNode(TreeNode root, int key) {
         if (root == null) return null;
-        if (root.val > key) {
-            root.left = deleteNode(root.left, key);
-        } else if (root.val < key) {
-            root.right = deleteNode(root.right, key);
-        } else {
-            if (root.left == null) return root.right;
-            if (root.right == null) return root.left;
-            TreeNode leftMost = root.right;
-            while (leftMost.left != null) {
-                leftMost = leftMost.left;
+        TreeNode cur = root;
+        TreeNode pre = null;
+        while (cur != null && cur.val != key) {
+            pre = cur;
+            if (cur.val > key) {
+                cur = cur.left;
+            } else {
+                cur = cur.right;
             }
-            leftMost.left = root.left;
-            return root.right;
+        }
+        if (pre == null) {
+            return deleteCurNode(cur);
+        }
+        if (pre.left == cur) {
+            pre.left = deleteCurNode(cur);
+        }
+        if (pre.right == cur) {
+            pre.right = deleteCurNode(cur);
         }
         return root;
+    }
+
+    TreeNode deleteCurNode(TreeNode root) {
+        if (root == null) return null;
+        if (root.left == null) return root.right;
+        if (root.right == null) return root.left;
+        TreeNode leftMost = root.right;
+        while (leftMost.left != null) {
+            leftMost = leftMost.left;
+        }
+        leftMost.left = root.left;
+        return root.right;
     }
 }
 //leetcode submit region end(Prohibit modification and deletion)
