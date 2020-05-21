@@ -65,11 +65,7 @@ class Solution {
                 }
             }
         }
-        String[] ret = new String[list.size()];
-        for (int i = 0; i < list.size(); ++i) {
-            ret[i] = list.get(i);
-        }
-        return ret;
+        return list.toArray(new String[list.size()]);
     }
 }
 //leetcode submit region end(Prohibit modification and deletion)
