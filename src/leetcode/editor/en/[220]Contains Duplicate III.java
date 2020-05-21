@@ -33,24 +33,40 @@
 //leetcode submit region begin(Prohibit modification and deletion)
 class Solution {
     public boolean containsNearbyAlmostDuplicate(int[] nums, int k, int t) {
-        long tLong = (long)t;
-        TreeSet<Long> set = new TreeSet<>();
+        if (nums.length == 0 || t < 0) return false;
+        Map<Long, Integer> map = new HashMap<>();
+        int min = Integer.MAX_VALUE;
+        for (int num : nums) {
+            min = num < min ? num : min;
+        }
         for (int i = 0; i < nums.length; ++i) {
-            // Find the successor of current element
-            Long s = set.ceiling((long)nums[i]);
-            if (s != null && s <= nums[i] + tLong) return true;
+            long curBucket = getIndex(min, nums[i], t);
+            if (map.containsKey(curBucket)) {
+                return true;
+            }
+            if (map.containsKey(curBucket-1)) {
+                if (Math.abs((long)nums[i] - nums[map.get(curBucket-1)]) <= (long) t) {
+                    return true;
+                }
 
-            // Find the predecessor of current element
-            Long g = set.floor((long)nums[i]);
-            if (g != null && nums[i] <= g + tLong) return true;
-
-            set.add((long)nums[i]);
-            if (set.size() > k) {
-                set.remove((long)nums[i - k]);
+            }
+            if (map.containsKey(curBucket+1)) {
+                if (Math.abs((long)nums[i] - nums[map.get(curBucket+1)]) <= (long) t) {
+                    return true;
+                }
+            }
+            map.put(curBucket, i);
+            if (i >= k) {
+                map.remove(getIndex(min, nums[i-k], t));
             }
         }
+
         return false;
     }
+
+    long getIndex(int min, int num, int interval) {
+        return ((long) num - (long) min) / ((long) interval + 1);
     }
 }
+
 //leetcode submit region end(Prohibit modification and deletion)
