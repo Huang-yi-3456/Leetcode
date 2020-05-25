@@ -26,70 +26,67 @@
 
 //leetcode submit region begin(Prohibit modification and deletion)
 class Solution {
-    boolean isParldrm(String str, int start, int end) {
-        while(start <= end) {
-            if (str.charAt(start) != str.charAt(end)) return false;
-            start++;
-            end--;
+    boolean isPalndrm(String str, int start) {
+        int end = str.length() - 1;
+        while (start <= end) {
+            if (str.charAt(start++) != str.charAt(end--)) return false;
         }
         return true;
     }
 
-    List<String> validSuffix(String str) {
-        List<String> validSuffixList = new LinkedList<>();
-        for (int i = str.length() - 1; i >= 0; --i) {
-            if (isParldrm(str, 0, i)) {
-                validSuffixList.add(str.substring(i+1));
-            }
-        }
-        return validSuffixList;
-    }
-
-    List<String> validPrefix(String str) {
-        List<String> validPrefixList = new LinkedList<>();
-        for (int i = 0; i < str.length(); ++i) {
-            if (isParldrm(str, i, str.length()-1)) {
-                validPrefixList.add(str.substring(0, i));
-            }
-        }
-        return validPrefixList;
-    }
-
     public List<List<Integer>> palindromePairs(String[] words) {
-        Map<String, Integer> map = new HashMap<>();
+        TreeNode root = new TreeNode();
         for (int i = 0; i < words.length; ++i) {
-            map.put(words[i], i);
+            String word = new StringBuilder(words[i]).reverse().toString();
+            TreeNode cur = root;
+            for (int j = 0; j < word.length(); ++j) {
+                char letter = word.charAt(j);
+                if (isPalndrm(word, j)) {
+                    cur.palndrmSuffix.add(i);
+                }
+                if (cur.children.get(letter) == null) {
+                    cur.children.put(letter, new TreeNode());
+                }
+                cur = cur.children.get(letter);
+            }
+            cur.index = i;
         }
         List<List<Integer>> ret = new LinkedList<>();
-        for (String word : map.keySet()) {
-            int curIndex = map.get(word);
+
+        for (int curIndex = 0; curIndex < words.length; ++curIndex) {
+            String word = words[curIndex];
+            TreeNode curNode = root;
+            for(int i = 0; i < word.length(); ++i) {
+                // case 3:
+                if (curNode.index != null && isPalndrm(word, i)) {
+                    ret.add(Arrays.asList(curIndex, curNode.index));
+                }
+                char letter = word.charAt(i);
+                curNode = curNode.children.get(letter);
+                if (curNode == null) break;
+            }
+            if (curNode == null) continue;
             // case 1:
-            String reversedCur = new StringBuilder(word).reverse().toString();
-            if (map.containsKey(reversedCur) && map.get(reversedCur) != curIndex) {
-                ret.add(Arrays.asList(curIndex, map.get(reversedCur)));
+            if (curNode.index != null && curNode.index != curIndex) {
+                ret.add(Arrays.asList(curIndex, curNode.index));
             }
             // case 2:
-            List<String> validSuffixList = validSuffix(word);
-            for (String suffix : validSuffixList) {
-                String reversedSuffix = new StringBuilder(suffix).reverse().toString();
-                if (map.containsKey(reversedSuffix) && map.get(reversedSuffix) != curIndex) {
-                    ret.add(Arrays.asList(map.get(reversedSuffix), curIndex));
-                }
-
-            }
-
-            // case 3:
-            List<String> validPrefixList = validPrefix(word);
-            for (String prefix : validPrefixList) {
-                String reversedPrefix = new StringBuilder(prefix).reverse().toString();
-                if (map.containsKey(reversedPrefix) && map.get(reversedPrefix) != curIndex) {
-                    ret.add(Arrays.asList(curIndex, map.get(reversedPrefix)));
-                }
+            for (int palndrmSuffixIdx : curNode.palndrmSuffix) {
+                ret.add(Arrays.asList(curIndex, palndrmSuffixIdx));
             }
         }
-
-
         return ret;
+    }
+
+}
+
+class TreeNode {
+    Map<Character, TreeNode> children;
+    Integer index;
+    List<Integer> palndrmSuffix;
+    public TreeNode() {
+        children = new HashMap<>();
+        palndrmSuffix = new ArrayList<>();
     }
 }
 //leetcode submit region end(Prohibit modification and deletion)
