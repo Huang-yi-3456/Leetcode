@@ -18,64 +18,53 @@
 
 //leetcode submit region begin(Prohibit modification and deletion)
 class Solution {
+    TreeNode root ;
     int[] count;
     public List<Integer> countSmaller(int[] nums) {
         if (nums.length == 0) return new LinkedList<>();
-        if (nums.length == 0) return new LinkedList<>(){{add(0);}};
-        int[] index = new int[nums.length];
-        for (int i = 0; i < index.length; ++i) {
-            index[i] = i;
-        }
+        if (nums.length == 1) return new LinkedList<Integer>(){{add(0);}};
         count = new int[nums.length];
+        for (int i = nums.length-1; i >= 0; i--) {
+            insert(nums[i], i);
+        }
         List<Integer> ret = new LinkedList<>();
-
-        mergeSort(index, nums, 0, nums.length-1);
-        for (int i = 0; i < count.length; ++i) {
-            ret.add(count[i]);
+        for (int n : count) {
+            ret.add(n);
         }
         return ret;
     }
 
-    private void mergeSort(int[] index, int[] nums, int start, int end) {
-        if (start >= end) {
-            return;
-        }
-        int mid = start + (end - start) / 2;
-        mergeSort(index, nums, start, mid);
-        mergeSort(index, nums, mid+1, end);
-        merge(index, nums, start, mid, end);
-
+    void insert(int num, int i) {
+        root = insertRec(root, num, i, 0);
     }
 
-    private void merge(int[] index, int[] nums, int start, int mid, int end) {
-        int[] tmp = new int[end-start+1];
-        int[] index_tmp = new int[end-start+1];
-
-        int second = mid + 1;
-        int p = 0;
-
-        for (int i = start; i <= mid; i++) {
-            while (second <= end && nums[second] < nums[i]) {
-                tmp[p] = nums[second];
-                index_tmp[p++] = index[second++];
-            }
-            if (i-start < p) {
-                count[index[i]] += p - (i - start);
-            }
-            tmp[p] = nums[i];
-            index_tmp[p++] = index[i];
+    TreeNode insertRec(TreeNode root, int num, int i, int sum) {
+        if (root == null) {
+            count[i] = sum;
+            root = new TreeNode(num);
+        } else if (num == root.val) {
+            root.dup++;
+            count[i] = sum + root.sum;
+        } else if (root.val < num) {
+            root.right = insertRec(root.right, num, i, sum + root.sum + root.dup);
+        } else {
+            root.sum++;
+            root.left = insertRec(root.left, num, i, sum);
         }
+        return root;
+    }
 
-        while (second <= end) {
-            tmp[p] = nums[second];
-            index_tmp[p++] = index[second++];
-        }
+}
 
-        for (int i = 0; i < tmp.length; ++i) {
-            nums[start] = tmp[i];
-            index[start++] = index_tmp[i];
-        }
+class TreeNode {
+    TreeNode left;
+    TreeNode right;
+    int val;
+    int sum;
+    int dup = 1;
 
+    public TreeNode(int val) {
+        this.val = val;
     }
 }
 //leetcode submit region end(Prohibit modification and deletion)
